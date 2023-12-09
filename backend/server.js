@@ -51,6 +51,28 @@ app.post('/upload', upload.single('pdfFile'), async (req, res) => {
   }
 });
 
+app.get('/data/:nome', async (req, res) => {
+  const { nome } = req.params;
+
+  try {
+    const data = await prisma.photo.findMany({
+      where: {
+        nameUser: nome
+      },
+    });
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ success: false, error: 'Foto não encontrada' });
+    }
+
+    res.json({ success: true, data: data });
+  } catch (error) {
+    console.error('Erro ao buscar arquivo!', error);
+    res.status(500).json({ success: false, error: 'Erro interno' });
+  }
+});
+
+
 app.get('/photo/:id', async (req, res) => {
   const { id } = req.params;
 
